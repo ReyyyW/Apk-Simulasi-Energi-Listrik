@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi Efisiensi Energi Listrik</title>
+    <style>
+        :root {
+            --primary: #1565C0;
+            --primary-light: #42A5F5;
+            --secondary: #FFC107;
+            --dark: #0D47A1;
+            --light: #E3F2FD;
+            --danger: #F44336;
+            --text: #212121;
+            --text-light: #757575;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: var(--text);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        header h1 {
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
+            margin-bottom: 8px;
+            padding: 0 10px;
+        }
+        
+        header p {
+            font-size: clamp(0.9rem, 3vw, 1rem);
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 15px;
+            line-height: 1.5;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease;
+        }
+        
+        .card:active {
+            transform: scale(0.98);
+        }
+        
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 8px;
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
+        }
+        
+        .appliance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .appliance-item {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: all 0.2s ease;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .appliance-item:active {
+            background: #BBDEFB;
+            transform: scale(0.95);
+        }
+        
+        .appliance-icon {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+        
+        .appliance-controls {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .appliance-controls label {
+            margin: 4px 0;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            text-align: left;
+            font-weight: 500;
+        }
+        
+        input[type="number"], select {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            width: 100%;
+            font-size: 16px; /* Prevent zoom on iOS */
+            background: white;
+            transition: border-color 0.2s;
+        }
+        
+        input[type="number"]:focus, select:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.2s;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        button:active {
+            background-color: var(--dark);
+            transform: scale(0.95);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .button-group button {
+            flex: 1;
+            min-width: 140px;
+        }
+        
+        .results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .result-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f0f0f0;
+        }
+        
+        .result-value {
+            font-size: clamp(1.5rem, 6vw, 2rem);
+            font-weight: bold;
+            color: var(--primary);
+            margin: 8px 0;
+        }
+        
+        .result-label {
+            color: var(--text-light);
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+        }
+        
+        .savings {
+            background: linear-gradient(135deg, var(--secondary), #FFA000);
+            color: white;
+        }
+        
+        .savings .result-value {
+            color: white;
+        }
+        
+        .tips {
+            background: var(--light);
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .tips h3 {
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .chart-container {
+            height: 250px;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: var(--text-light);
+            font-size: 0.85rem;
+            border-top: 1px solid #eee;
+        }
+        
+        /* Mobile First Styles */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .appliance-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .results {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .card {
+                padding: 15px;
+                margin: 10px 0;
+                border-radius: 10px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .button-group button {
+                min-width: 100%;
+            }
+            
+            input[type="number"], select {
+                padding: 14px;
+                font-size: 16px;
+            }
+            
+            button {
+                padding: 16px;
+                min-height: 54px;
+            }
+            
+            .chart-container {
+                height: 200px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            header {
+                padding: 15px 0;
+            }
+            
+            header h1 {
+                font-size: 1.4rem;
+            }
+            
+            header p {
+                font-size: 0.85rem;
+            }
+            
+            .appliance-item {
+                padding: 12px;
+            }
+            
+            .appliance-icon {
+                font-size: 2rem;
+            }
+            
+            .result-card {
+                padding: 15px;
+            }
+            
+            .result-value {
+                font-size: 1.4rem;
+            }
+            
+            .chart-container {
+                height: 180px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .container {
+                padding: 8px;
+            }
+            
+            .card {
+                padding: 12px;
+            }
+            
+            button {
+                padding: 14px;
+                font-size: 14px;
+            }
+            
+            input[type="number"], select {
+                padding: 12px;
+            }
+        }
+        
+        /* Touch improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .appliance-item:hover {
+                background: var(--light);
+                transform: none;
+            }
+            
+            button:hover {
+                background-color: var(--primary);
+            }
+            
+            .card:hover {
+                transform: none;
+            }
+        }
+        
+        /* Safe area for notch phones */
+        @supports(padding: max(0px)) {
+            .container {
+                padding-left: max(15px, env(safe-area-inset-left));
+                padding-right: max(15px, env(safe-area-inset-right));
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Simulasi Efisiensi Energi Listrik</h1>
+            <p>Hitung konsumsi energi rumah tangga Anda dan temukan cara untuk menghemat listrik serta mengurangi biaya</p>
+            <p>Reyhan Woenarwan/Industrial Engineering</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="card">
+            <h2>Perangkat Elektronik Rumah Tangga</h2>
+            <p>Masukkan informasi penggunaan perangkat elektronik di rumah Anda:</p>
+            
+            <div class="appliance-grid" id="applianceGrid">
+                <!-- Perangkat akan ditambahkan secara dinamis dengan JavaScript -->
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <div class="button-group">
+                    <button id="addAppliance">
+                        <span style="font-size: 1.2em;">+</span> Tambah Perangkat
+                    </button>
+                    <button id="calculate" style="background-color: var(--primary-light);">
+                        📊 Hitung Konsumsi
+                    </button>
+                    <button id="reset" style="background-color: var(--danger);">
+                        🔄 Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Hasil Simulasi</h2>
+            <div class="results">
+                <div class="result-card">
+                    <div class="result-label">Konsumsi Bulanan</div>
+                    <div class="result-value" id="monthlyConsumption">0 kWh</div>
+                    <div class="result-label">Biaya: Rp <span id="monthlyCost">0</span></div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-label">Konsumsi Tahunan</div>
+                    <div class="result-value" id="yearlyConsumption">0 kWh</div>
+                    <div class="result-label">Biaya: Rp <span id="yearlyCost">0</span></div>
+                </div>
+                
+                <div class="result-card savings">
+                    <div class="result-label">Potensi Penghematan</div>
+                    <div class="result-value" id="savings">0%</div>
+                    <div class="result-label">Dengan efisiensi energi</div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="consumptionChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Tips Menghemat Energi Listrik</h2>
+            <div class="tips">
+                <h3>Gunakan Perangkat Hemat Energi</h3>
+                <p>Pilih perangkat elektronik dengan label hemat energi (energy star) yang menggunakan daya lebih sedikit untuk fungsi yang sama.</p>
+            </div>
+            
+            <div class="tips">
+                <h3>Matikan Perangkat Saat Tidak Digunakan</h3>
+                <p>Banyak perangkat terus mengonsumsi listrik meski dalam mode standby. Cabut charger, matikan TV, dan komputer saat tidak digunakan.</p>
+            </div>
+            
+            <div class="tips">
+                <h3>Optimalkan Penggunaan AC</h3>
+                <p>Atur suhu AC pada 24-25°C, tutup jendela dan pintu saat AC menyala, dan lakukan perawatan rutin pada filter AC.</p>
+            </div>
+            
+            <div class="tips">
+                <h3>Manfaatkan Pencahayaan Alami</h3>
+                <p>Buka tirai dan gunakan cahaya matahari di siang hari. Ganti lampu dengan LED yang lebih hemat energi.</p>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>Aplikasi Simulasi Efisiensi Energi Listrik Rumah Tangga</p>
+            <p>Optimized for Mobile Devices</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Data perangkat elektronik umum
+        const commonAppliances = [
+            { name: "Lampu LED", power: 10, hours: 5, quantity: 5, icon: "💡" },
+            { name: "Kulkas", power: 150, hours: 24, quantity: 1, icon: "❄️" },
+            { name: "AC", power: 900, hours: 8, quantity: 1, icon: "🌬️" },
+            { name: "TV", power: 100, hours: 4, quantity: 1, icon: "📺" },
+            { name: "Mesin Cuci", power: 500, hours: 1, quantity: 1, icon: "🧺" },
+            { name: "Kipas Angin", power: 50, hours: 6, quantity: 2, icon: "🌀" },
+            { name: "Komputer", power: 200, hours: 6, quantity: 1, icon: "💻" },
+            { name: "Charger Ponsel", power: 5, hours: 3, quantity: 3, icon: "📱" }
+        ];
+
+        // Tarif listrik per kWh (dalam Rupiah)
+        const electricityRate = 1500;
+
+        // Inisialisasi aplikasi
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeAppliances();
+            setupEventListeners();
+            initializeChart();
+            
+            // Prevent double tap zoom on buttons
+            document.querySelectorAll('button').forEach(button => {
+                button.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                }, { passive: false });
+            });
+        });
+
+        // Inisialisasi perangkat default
+        function initializeAppliances() {
+            const applianceGrid = document.getElementById('applianceGrid');
+            applianceGrid.innerHTML = '';
+            
+            commonAppliances.forEach((appliance, index) => {
+                addApplianceToGrid(appliance, index);
+            });
+        }
+
+        // Menambahkan perangkat ke grid
+        function addApplianceToGrid(appliance, index) {
+            const applianceGrid = document.getElementById('applianceGrid');
+            
+            const applianceItem = document.createElement('div');
+            applianceItem.className = 'appliance-item';
+            applianceItem.dataset.index = index;
+            
+            applianceItem.innerHTML = `
+                <div class="appliance-icon">${appliance.icon}</div>
+                <h3 style="font-size: clamp(1rem, 4vw, 1.2rem); margin-bottom: 8px;">${appliance.name}</h3>
+                <div class="appliance-controls">
+                    <label>Daya (Watt):</label>
+                    <input type="number" class="power-input" value="${appliance.power}" min="1" inputmode="numeric">
+                    
+                    <label>Jam Penggunaan/Hari:</label>
+                    <input type="number" class="hours-input" value="${appliance.hours}" min="0" max="24" step="0.5" inputmode="decimal">
+                    
+                    <label>Jumlah:</label>
+                    <input type="number" class="quantity-input" value="${appliance.quantity}" min="1" inputmode="numeric">
+                    
+                    <button class="remove-appliance" style="background-color: var(--danger); margin-top: 10px; padding: 10px;">
+                        🗑️ Hapus
+                    </button>
+                </div>
+            `;
+            
+            applianceGrid.appendChild(applianceItem);
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('addAppliance').addEventListener('click', addNewAppliance);
+            document.getElementById('calculate').addEventListener('click', calculateConsumption);
+            document.getElementById('reset').addEventListener('click', resetForm);
+            
+            // Event delegation untuk tombol hapus
+            document.getElementById('applianceGrid').addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-appliance')) {
+                    const applianceItem = e.target.closest('.appliance-item');
+                    applianceItem.remove();
+                }
+            });
+        }
+
+        // Menambahkan perangkat baru
+        function addNewAppliance() {
+            const newAppliance = {
+                name: "Perangkat Baru",
+                power: 100,
+                hours: 2,
+                quantity: 1,
+                icon: "⚡"
+            };
+            
+            addApplianceToGrid(newAppliance, Date.now());
+        }
+
+        // Menghitung konsumsi energi
+        function calculateConsumption() {
+            const applianceItems = document.querySelectorAll('.appliance-item');
+            let totalMonthlyConsumption = 0;
+            
+            applianceItems.forEach(item => {
+                const power = parseFloat(item.querySelector('.power-input').value) || 0;
+                const hours = parseFloat(item.querySelector('.hours-input').value) || 0;
+                const quantity = parseFloat(item.querySelector('.quantity-input').value) || 0;
+                
+                // Konsumsi harian dalam Wh, dikonversi ke kWh
+                const dailyConsumption = (power * hours * quantity) / 1000;
+                // Konsumsi bulanan (30 hari)
+                const monthlyConsumption = dailyConsumption * 30;
+                
+                totalMonthlyConsumption += monthlyConsumption;
+            });
+            
+            // Konsumsi tahunan
+            const yearlyConsumption = totalMonthlyConsumption * 12;
+            
+            // Biaya
+            const monthlyCost = Math.round(totalMonthlyConsumption * electricityRate);
+            const yearlyCost = Math.round(yearlyConsumption * electricityRate);
+            
+            // Potensi penghematan (estimasi 15-30%)
+            const savingsPercentage = Math.floor(Math.random() * 16) + 15; // 15-30%
+            const potentialSavings = Math.round(monthlyCost * savingsPercentage / 100);
+            
+            // Update UI
+            document.getElementById('monthlyConsumption').textContent = `${totalMonthlyConsumption.toFixed(2)} kWh`;
+            document.getElementById('yearlyConsumption').textContent = `${yearlyConsumption.toFixed(2)} kWh`;
+            document.getElementById('monthlyCost').textContent = monthlyCost.toLocaleString('id-ID');
+            document.getElementById('yearlyCost').textContent = yearlyCost.toLocaleString('id-ID');
+            document.getElementById('savings').textContent = `${savingsPercentage}%`;
+            
+            // Update chart
+            updateChart(totalMonthlyConsumption, potentialSavings);
+        }
+
+        // Reset form
+        function resetForm() {
+            if (confirm('Apakah Anda yakin ingin mereset semua data?')) {
+                initializeAppliances();
+                document.getElementById('monthlyConsumption').textContent = '0 kWh';
+                document.getElementById('yearlyConsumption').textContent = '0 kWh';
+                document.getElementById('monthlyCost').textContent = '0';
+                document.getElementById('yearlyCost').textContent = '0';
+                document.getElementById('savings').textContent = '0%';
+                
+                // Reset chart
+                updateChart(0, 0);
+            }
+        }
+
+        // Inisialisasi chart
+        let consumptionChart;
+        
+        function initializeChart() {
+            const ctx = document.getElementById('consumptionChart').getContext('2d');
+            consumptionChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Konsumsi Saat Ini', 'Potensi Setelah Efisiensi'],
+                    datasets: [{
+                        label: 'Konsumsi Listrik (kWh)',
+                        data: [0, 0],
+                        backgroundColor: [
+                            'rgba(66, 165, 245, 0.7)',
+                            'rgba(255, 193, 7, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(66, 165, 245, 1)',
+                            'rgba(255, 193, 7, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Konsumsi (kWh)'
+                            },
+                            ticks: {
+                                font: {
+                                    size: window.innerWidth < 480 ? 10 : 12
+                                }
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: {
+                                    size: window.innerWidth < 480 ? 10 : 12
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Perbandingan Konsumsi Listrik',
+                            font: {
+                                size: window.innerWidth < 480 ? 12 : 14
+                            }
+                        },
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update chart
+        function updateChart(currentConsumption, savings) {
+            const potentialConsumption = currentConsumption - (currentConsumption * savings / 100);
+            
+            consumptionChart.data.datasets[0].data = [currentConsumption, potentialConsumption];
+            consumptionChart.update();
+        }
+
+        // Handle orientation change
+        window.addEventListener('orientationchange', function() {
+            setTimeout(() => {
+                if (consumptionChart) {
+                    consumptionChart.resize();
+                }
+            }, 300);
+        });
+
+        // Handle resize
+        window.addEventListener('resize', function() {
+            if (consumptionChart) {
+                consumptionChart.resize();
+            }
+        });
+    </script>
+</body>
+</html>
