@@ -35,7 +35,7 @@
             min-height: 100vh;
         }
         
-        /* Efek Salju */
+        /* Efek Salju - Titik Putih Biasa */
         #snow-container {
             position: fixed;
             top: 0;
@@ -49,18 +49,28 @@
         
         .snowflake {
             position: absolute;
-            top: -20px;
-            color: white;
-            font-size: 1.5em;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+            top: -10px;
+            background-color: white;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
             user-select: none;
-            opacity: 0.8;
-            animation: fall linear infinite;
         }
         
+        /* Animasi jatuh dengan variasi */
         @keyframes fall {
-            to {
-                transform: translateY(100vh) rotate(360deg);
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) translateX(var(--sway)) rotate(var(--rotate));
+                opacity: 0;
             }
         }
         
@@ -70,45 +80,43 @@
             bottom: 20px;
             right: 20px;
             z-index: 1001;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 50px;
-            padding: 10px 15px;
+            padding: 12px 20px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
             border: 2px solid var(--primary);
+            font-weight: 600;
+            color: var(--primary);
         }
         
         .snow-control:hover {
             transform: scale(1.05);
             background: white;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
         }
         
         .snow-control:active {
             transform: scale(0.95);
         }
         
-        .snow-control span {
-            font-size: 1.2em;
-        }
-        
-        .snow-control .snow-text {
-            font-size: 0.9em;
-            font-weight: 600;
-            color: var(--primary);
-            white-space: nowrap;
+        .snow-control .snow-icon {
+            font-size: 1.4em;
+            transition: transform 0.3s ease;
         }
         
         .snow-control.off {
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.8);
             border-color: #ccc;
+            color: var(--text-light);
         }
         
-        .snow-control.off .snow-text {
-            color: var(--text-light);
+        .snow-control.off .snow-icon {
+            transform: rotate(180deg);
         }
         
         .container {
@@ -422,12 +430,9 @@
                 padding: 12px;
             }
             
-            .snow-control .snow-text {
-                display: none;
-            }
-            
             .snow-control {
-                padding: 12px;
+                padding: 10px 15px;
+                font-size: 0.9em;
             }
         }
         
@@ -468,31 +473,54 @@
                 min-height: 52px;
                 padding: 15px;
             }
+            
+            .snow-control {
+                bottom: 15px;
+                right: 15px;
+                padding: 8px 12px;
+                font-size: 0.85em;
+            }
         }
         
         /* Efek khusus untuk mode salju */
         body.snow-mode {
-            background: linear-gradient(to bottom, #0D47A1, #1565C0, #42A5F5);
+            background: linear-gradient(to bottom, #1a237e, #283593, #303f9f);
         }
         
         body.snow-mode .card,
         body.snow-mode .result-card,
         body.snow-mode .chart-container,
         body.snow-mode footer {
-            background: rgba(255, 255, 255, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
         }
         
         body.snow-mode .appliance-item {
-            background: rgba(227, 242, 253, 0.9);
+            background: rgba(227, 242, 253, 0.85);
         }
         
         body.snow-mode .tips {
-            background: rgba(227, 242, 253, 0.9);
+            background: rgba(227, 242, 253, 0.85);
         }
         
         body.snow-mode header {
-            background: linear-gradient(135deg, #0D47A1, #1565C0);
+            background: linear-gradient(135deg, #283593, #303f9f);
+            box-shadow: 0 4px 20px rgba(31, 38, 135, 0.2);
+        }
+        
+        /* Efek blur tambahan untuk salju */
+        body.snow-mode::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(2px);
+            z-index: -1;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -502,8 +530,8 @@
     
     <!-- Tombol kontrol efek salju -->
     <div class="snow-control" id="snowToggle">
-        <span>❄️</span>
-        <span class="snow-text">Efek Salju</span>
+        <div class="snow-icon">❄️</div>
+        <span>Efek Salju</span>
     </div>
     
     <header>
@@ -589,7 +617,7 @@
     <footer>
         <div class="container">
             <p>Aplikasi Simulasi Efisiensi Energi Listrik Rumah Tangga</p>
-            <p>Dengan efek salju khusus untuk pengalaman yang lebih menyenangkan! ❄️</p>
+            <p>Dengan efek salju titik putih untuk pengalaman yang lebih menyenangkan!</p>
         </div>
     </footer>
 
@@ -612,17 +640,18 @@
 
         // Variabel untuk efek salju
         let snowInterval;
-        let isSnowEnabled = true; // Default aktif
+        let isSnowEnabled = false; // Default mati
+        let snowflakes = [];
 
         // Inisialisasi aplikasi
         document.addEventListener('DOMContentLoaded', function() {
             initializeAppliances();
             setupEventListeners();
             initializeChart();
-            initializeSnowEffect(); // Mulai efek salju
+            initializeSnowEffect();
         });
 
-        // Fungsi untuk efek salju
+        // Fungsi untuk efek salju TITIK PUTIH
         function initializeSnowEffect() {
             const snowContainer = document.getElementById('snow-container');
             const snowToggle = document.getElementById('snowToggle');
@@ -635,20 +664,18 @@
                     // Aktifkan efek salju
                     snowContainer.style.display = 'block';
                     snowToggle.classList.remove('off');
-                    snowToggle.innerHTML = '<span>❄️</span><span class="snow-text">Efek Salju</span>';
                     document.body.classList.add('snow-mode');
                     startSnowEffect();
                 } else {
                     // Nonaktifkan efek salju
                     snowContainer.style.display = 'none';
                     snowToggle.classList.add('off');
-                    snowToggle.innerHTML = '<span>☀️</span><span class="snow-text">Efek Salju</span>';
                     document.body.classList.remove('snow-mode');
                     stopSnowEffect();
                 }
             });
             
-            // Mulai efek salju
+            // Mulai efek salju jika diaktifkan
             if (isSnowEnabled) {
                 startSnowEffect();
                 document.body.classList.add('snow-mode');
@@ -658,55 +685,116 @@
         function startSnowEffect() {
             const snowContainer = document.getElementById('snow-container');
             snowContainer.innerHTML = '';
+            snowflakes = [];
             
             // Buat salju pertama kali
-            createSnowflakes();
+            createSnowBatch();
             
-            // Buat salju baru setiap 300ms
-            snowInterval = setInterval(createSnowflakes, 300);
+            // Update salju yang ada
+            snowInterval = setInterval(updateSnow, 30); // 30ms untuk smooth animation
         }
 
         function stopSnowEffect() {
             clearInterval(snowInterval);
             const snowContainer = document.getElementById('snow-container');
             snowContainer.innerHTML = '';
+            snowflakes = [];
         }
 
-        function createSnowflakes() {
-            const snowContainer = document.getElementById('snow-container');
-            const snowflakeCount = 15; // Jumlah salju per batch
+        function createSnowBatch() {
+            const batchSize = 5; // Buat sedikit demi sedikit untuk performance
             
-            for (let i = 0; i < snowflakeCount; i++) {
-                const snowflake = document.createElement('div');
-                snowflake.className = 'snowflake';
-                snowflake.innerHTML = '❄';
+            for (let i = 0; i < batchSize; i++) {
+                createSnowflake();
+            }
+        }
+
+        function createSnowflake() {
+            const snowContainer = document.getElementById('snow-container');
+            
+            // Random properties
+            const size = Math.random() * 5 + 2; // Ukuran 2-7px
+            const startX = Math.random() * window.innerWidth;
+            const speed = Math.random() * 2 + 1; // Kecepatan 1-3
+            const sway = Math.random() * 60 - 30; // Gerakan kiri-kanan -30px sampai +30px
+            const opacity = Math.random() * 0.7 + 0.3; // Opacity 0.3-1
+            const rotation = Math.random() * 360; // Rotasi awal
+            const rotateSpeed = Math.random() * 2 - 1; // Kecepatan rotasi -1 sampai +1
+            
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            
+            // Set style
+            snowflake.style.width = `${size}px`;
+            snowflake.style.height = `${size}px`;
+            snowflake.style.left = `${startX}px`;
+            snowflake.style.top = '-10px';
+            snowflake.style.opacity = opacity;
+            snowflake.style.setProperty('--sway', `${sway}px`);
+            snowflake.style.setProperty('--rotate', `${rotation}deg`);
+            
+            // Tambah glow effect untuk salju
+            snowflake.style.boxShadow = `0 0 ${size}px ${size/2}px rgba(255, 255, 255, ${opacity * 0.5})`;
+            
+            // Simpan properties untuk animasi
+            const snowflakeData = {
+                element: snowflake,
+                x: startX,
+                y: -10,
+                speed: speed,
+                sway: sway / 100, // Konversi untuk per frame
+                swayAmount: 0,
+                rotation: rotation,
+                rotateSpeed: rotateSpeed,
+                opacity: opacity
+            };
+            
+            snowContainer.appendChild(snowflake);
+            snowflakes.push(snowflakeData);
+            
+            // Hapus jika sudah terlalu banyak salju
+            if (snowflakes.length > 200) {
+                const oldSnowflake = snowflakes.shift();
+                if (oldSnowflake.element.parentNode === snowContainer) {
+                    snowContainer.removeChild(oldSnowflake.element);
+                }
+            }
+        }
+
+        function updateSnow() {
+            // Buat salju baru secara berkala
+            if (Math.random() < 0.3) { // 30% chance setiap frame
+                createSnowflake();
+            }
+            
+            // Update semua salju
+            for (let i = snowflakes.length - 1; i >= 0; i--) {
+                const flake = snowflakes[i];
                 
-                // Random position
-                const startX = Math.random() * window.innerWidth;
-                const size = Math.random() * 20 + 10; // Ukuran 10-30px
-                const duration = Math.random() * 10 + 10; // Durasi 10-20 detik
-                const delay = Math.random() * 5; // Delay 0-5 detik
-                const opacity = Math.random() * 0.5 + 0.5; // Opacity 0.5-1
+                // Update position
+                flake.y += flake.speed;
+                flake.swayAmount += flake.sway;
+                flake.x += Math.sin(flake.swayAmount) * 0.5; // Gerakan sinusoidal
+                flake.rotation += flake.rotateSpeed;
                 
-                // Set style
-                snowflake.style.left = `${startX}px`;
-                snowflake.style.fontSize = `${size}px`;
-                snowflake.style.opacity = opacity;
-                snowflake.style.animationDuration = `${duration}s`;
-                snowflake.style.animationDelay = `${delay}s`;
+                // Update element
+                flake.element.style.top = `${flake.y}px`;
+                flake.element.style.left = `${flake.x}px`;
+                flake.element.style.transform = `rotate(${flake.rotation}deg)`;
                 
-                // Random sway (gerakan kiri-kanan)
-                const sway = Math.random() * 100 - 50; // -50px sampai +50px
-                snowflake.style.animation = `fall ${duration}s linear ${delay}s infinite`;
+                // Fade out near bottom
+                const distanceFromBottom = window.innerHeight - flake.y;
+                if (distanceFromBottom < 100) {
+                    flake.element.style.opacity = (distanceFromBottom / 100) * flake.opacity;
+                }
                 
-                snowContainer.appendChild(snowflake);
-                
-                // Hapus snowflake setelah selesai animasi
-                setTimeout(() => {
-                    if (snowflake.parentNode === snowContainer) {
-                        snowContainer.removeChild(snowflake);
+                // Hapus jika sudah keluar layar
+                if (flake.y > window.innerHeight + 20) {
+                    if (flake.element.parentNode === document.getElementById('snow-container')) {
+                        document.getElementById('snow-container').removeChild(flake.element);
                     }
-                }, (duration + delay) * 1000);
+                    snowflakes.splice(i, 1);
+                }
             }
         }
 
@@ -921,7 +1009,7 @@
             // Validasi range savings percentage
             const validSavings = Math.min(100, Math.max(0, savingsPct));
             
-            // Hitung penghematan potensial (bukan konsumsi setelah efisiensi)
+            // Hitung penghematan potensial
             const potentialSavings = current * (validSavings / 100);
             
             // Pastikan tidak ada nilai negatif
@@ -938,7 +1026,14 @@
             if (consumptionChart) {
                 consumptionChart.resize();
             }
+            
+            // Reset salju jika resize besar
+            if (isSnowEnabled) {
+                stopSnowEffect();
+                startSnowEffect();
+            }
         });
     </script>
 </body>
 </html>
+
